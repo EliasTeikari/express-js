@@ -1,3 +1,4 @@
+const Joi = require("joi");
 const express = require("express");
 const app = express();
 
@@ -18,9 +19,15 @@ app.get("/api/courses", (req, res) => {
 });
 
 app.post("/api/courses", (req, res) => {
-  if (!req.body.name || req.body.name.length < 3) {
+  const schema = {
+    name: Joi.string().min(3).required(),
+  };
+
+  const result = Joi.ValidationErroralidate(req.body, schema);
+
+  if (result.error) {
     // 400 Bad Request
-    res.status(400).send("Name is required and should be minimum 3 characters");
+    res.status(400).send(result.error.details[0].message);
     return;
   }
 
@@ -37,6 +44,34 @@ app.get("/api/courses/:id", (req, res) => {
   if (!course) {
     res.status(404).send("The course with the given ID was not found.");
   }
+  res.send(course);
+});
+
+app.put("/api/courses/:id", (req, res) => {
+  // Look up the course
+  const course = courses.find((c) => c.id === parseInt(req.params.id));
+  // if not existing, return 404
+  if (!course) {
+    res.status(404).send("The course with the given ID was not found.");
+  }
+
+  // Validate
+  // if invalid, return 400 - Bad request
+  const schema = {
+    name: Joi.string().min(3).required(),
+  };
+
+  const result = Joi.ValidationErroralidate(req.body, schema);
+
+  if (result.error) {
+    // 400 Bad Request
+    res.status(400).send(result.error.details[0].message);
+    return;
+  }
+
+  // Update course
+  course.name = req.body.name;
+  // Return the updated course
   res.send(course);
 });
 
