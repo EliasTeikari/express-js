@@ -1,3 +1,4 @@
+const config = require("config");
 const Joi = require("joi");
 const express = require("express");
 const app = express();
@@ -9,7 +10,15 @@ app.use(express.json());
 app.use(express.urlencoded());
 app.use(logger);
 app.use(helmet());
-app.use(morgan("tiny"));
+
+// Config
+console.log("Application name: " + config.get("name"));
+console.log("Mail server: " + config.get("mail.host"));
+
+if (app.get("env") === "development") {
+  app.use(morgan("tiny"));
+  console.log("Morgan enabled");
+}
 
 app.use(function (req, res, next) {
   console.log("Authenticating...");
