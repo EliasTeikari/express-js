@@ -6,6 +6,7 @@ const logger = require("./logger");
 const helmet = require("helmet");
 const morgan = require("morgan");
 const debug = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -19,7 +20,7 @@ console.log("Mail password: " + config.get("mail.password"));
 
 if (app.get("env") === "development") {
   app.use(morgan("tiny"));
-  startupDebugger("Morgan enabled...");
+  debug("Morgan enabled...");
 }
 
 // Db work..
@@ -96,7 +97,7 @@ function validateCourse(course) {
     name: Joi.string().min(3).required(),
   };
 
-  return Joi.ValidationErroralidate(course, schema);
+  return Joi.validate(course, schema);
 }
 
 app.delete("/api/courses/:id", (req, res) => {
