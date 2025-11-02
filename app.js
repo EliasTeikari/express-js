@@ -5,6 +5,7 @@ const app = express();
 const logger = require("./logger");
 const helmet = require("helmet");
 const morgan = require("morgan");
+const debug = require("debug")("app:startup");
 
 app.use(express.json());
 app.use(express.urlencoded());
@@ -14,11 +15,15 @@ app.use(helmet());
 // Config
 console.log("Application name: " + config.get("name"));
 console.log("Mail server: " + config.get("mail.host"));
+console.log("Mail password: " + config.get("mail.password"));
 
 if (app.get("env") === "development") {
   app.use(morgan("tiny"));
-  console.log("Morgan enabled");
+  startupDebugger("Morgan enabled...");
 }
+
+// Db work..
+dbDebugger("connected to the database...");
 
 app.use(function (req, res, next) {
   console.log("Authenticating...");
